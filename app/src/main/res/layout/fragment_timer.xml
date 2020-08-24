@@ -5,10 +5,51 @@
     android:layout_height="match_parent"
     tools:context=".TimerFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
+    <RelativeLayout
         android:layout_height="match_parent"
-        android:text="The Timer Fragment" />
+        android:layout_width="match_parent">
 
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:indeterminateOnly="false"
+        android:progressDrawable="@drawable/circle"
+        android:layout_centerInParent="true"
+        tools:progress="0"/>
+
+    <TextView
+        android:id="@+id/mText"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/progress_bar"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap in the middle to set the timer"/>
+
+    <Button
+        android:id="@+id/mButton"
+        android:layout_below="@id/progress_bar"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start"/>
+
+    <TextView
+        android:id="@+id/timerProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00:00"
+        android:textSize="40dp"
+        android:layout_centerInParent="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+    <Button
+        android:id="@+id/mButtonSet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/progress_bar"
+        android:text="ENTER TIME"/>
+    </RelativeLayout>>
 </FrameLayout>
