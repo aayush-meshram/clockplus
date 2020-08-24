@@ -49,8 +49,7 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerFragment timePickerFragment = new TimePickerFragment();
-                timePickerFragment.setListener(new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
                         String s1 = i + ":" + i1;
@@ -65,8 +64,8 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
 
                         Toast.makeText(getContext(), "Alarm set for " + c, Toast.LENGTH_SHORT).show();
                     }
-                });
-                timePickerFragment.show(getFragmentManager(), "Time Picker");
+                },Calendar.HOUR_OF_DAY,Calendar.MINUTE, false);
+                timePickerDialog.show();
             }
         });
         return parentHolder;
