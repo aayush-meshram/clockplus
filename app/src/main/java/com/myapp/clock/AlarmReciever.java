@@ -17,7 +17,7 @@ import static com.myapp.clock.App.CHANNEL_ID;
 
 
 @RequiresApi(api = Build.VERSION_CODES.N)
-public class AlarmReciever extends BroadcastReceiver implements AlarmManager.OnAlarmListener {
+public class AlarmReciever extends BroadcastReceiver  {
     public NotificationManagerCompat notificationManager;
     public Context ctx;
 
@@ -36,8 +36,4 @@ public class AlarmReciever extends BroadcastReceiver implements AlarmManager.OnA
         notificationManager.notify(1, notification);
     }
 
-    @Override
-    public void onAlarm() {
-        Toast.makeText(ctx, "Pst, I am here at AlarmReciever!", Toast.LENGTH_SHORT).show();
-    }
 }

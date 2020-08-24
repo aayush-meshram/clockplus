@@ -28,7 +28,7 @@ import java.nio.channels.CancelledKeyException;
 import java.text.DateFormat;
 import java.util.Calendar;
 
-public class AlarmFragment extends Fragment {
+public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSetListener {
 
 
     public AlarmFragment() {
@@ -53,7 +53,7 @@ public class AlarmFragment extends Fragment {
                 timePickerFragment.setListener(new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        String s1 = i+":"+i1;
+                        String s1 = i + ":" + i1;
 
                         mTime.setText(s1);
                         mText.setText("Alarm Set!");
@@ -62,9 +62,8 @@ public class AlarmFragment extends Fragment {
                         c.set(Calendar.HOUR_OF_DAY, i);
                         c.set(Calendar.MINUTE, i1);
                         c.set(Calendar.MILLISECOND, 0);
-                        setAlarm(c);
 
-                        Toast.makeText(getContext(), "Alarm set for "+s1, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Alarm set for " + c, Toast.LENGTH_SHORT).show();
                     }
                 });
                 timePickerFragment.show(getFragmentManager(), "Time Picker");
@@ -73,13 +72,15 @@ public class AlarmFragment extends Fragment {
         return parentHolder;
     }
 
-    public void setAlarm(Calendar c)  {
-
+    @Override
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getActivity(),AlarmReciever.class);
+        Intent intent = new Intent(getActivity(), AlarmReciever.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 1, intent, 0);
-
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, i);
+        c.set(Calendar.MINUTE, i1);
+        c.set(Calendar.MILLISECOND, 0);
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
-
 }
