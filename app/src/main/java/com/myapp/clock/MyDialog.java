@@ -5,69 +5,101 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.DialogFragment;
 
-public class MyDialog extends DialogFragment {
+public class MyDialog extends DialogFragment implements TextView.OnEditorActionListener {
     public int hours = 0;
     public int mins = 0;
     public int secs = 0;
     public EditText hh;
     public EditText mm;
     public EditText ss;
+    public long time_timer;
+
+    public MyDialog()   {
+
+    }
+
+    public static MyDialog newInstance(String title)    {
+        MyDialog myDialog = new MyDialog();
+        Bundle args = new Bundle();
+        args.putString("title", title);
+        myDialog.setArguments(args);
+        return myDialog;
+    }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.dialog_frag, null);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_frag, container);
+    }
 
-        hh = view.findViewById(R.id.hours);
-        mm = view.findViewById(R.id.minutes);
-        ss = view.findViewById(R.id.seconds);
+    @Override
 
-        builder.setView(view)
-                .setTitle("ENTER TIME")
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                    }
-                })
-                .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
+        hh = (EditText) view.findViewById(R.id.hours);
+        mm = (EditText) view.findViewById(R.id.minutes);
+        ss = (EditText) view.findViewById(R.id.seconds);
 
-                        hours = Integer.parseInt(hh.getText().toString());
-                        mins = Integer.parseInt(mm.getText().toString());
-                        secs = Integer.parseInt(ss.getText().toString());
+        // Fetch arguments from bundle and set title
 
-                        if (secs >= 60 || secs < 0) {
-                            Toast.makeText(getContext(), "Second's parameter is invalid", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+        assert getArguments() != null;
+        String title = getArguments().getString("title", "Enter Name");
 
-                        if (mins >= 60 || mins < 0) {
-                            Toast.makeText(getContext(), "Minute's parameter is invalid", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+        getDialog().setTitle(title);
 
+        // Show soft keyboard automatically and request focus to field
 
-                        String s1 = hours+":"+mins+":"+secs;
+        hh.requestFocus();
 
-                        TimerFragment timerFragment = new TimerFragment();
-                        timerFragment.mText.setText("00:30:10");
+        getDialog().getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
-                    }
-                });
-        return builder.create();
+        // 2. Setup a callback when the "Done" button is pressed on keyboard
+        hh.setOnEditorActionListener((TextView.OnEditorActionListener)this);
+        mm.setOnEditorActionListener((TextView.OnEditorActionListener)this);
+        ss.setOnEditorActionListener((TextView.OnEditorActionListener)this);
+
+        hh.setOnEditorActionListener(this);
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+        if (EditorInfo.IME_ACTION_DONE == actionId) {
+            // Return input text back to activity through the implemented listener
+            MyDialogListener listener = (MyDialogListener) getActivity();
+
+            time_timer = Long.parseLong(hh.getText().toString()) * 60 * 60 * 1000;
+            time_timer += Long.parseLong(mm.getText().toString()) * 60 * 1000;
+            time_timer += Long.parseLong(ss.getText().toString()) * 1000;
+
+            listener.onFinishEditDialog(String.valueOf(time_timer));
+
+            // Close the dialog and return back to the parent activity
+            dismiss();
+            return true;
+        }
+        return false;
+    }
+
+    public interface MyDialogListener {
+        void onFinishEditDialog(String inputText);
     }
 
 }

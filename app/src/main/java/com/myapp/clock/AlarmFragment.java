@@ -10,6 +10,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.os.IBinder;
@@ -49,22 +51,11 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
-                        String s1 = i + ":" + i1;
-
-                        mTime.setText(s1);
-                        mText.setText("Alarm Set!");
-
-                        Calendar c = Calendar.getInstance();
-                        c.set(Calendar.HOUR_OF_DAY, i);
-                        c.set(Calendar.MINUTE, i1);
-                        c.set(Calendar.MILLISECOND, 0);
-
-                        Toast.makeText(getContext(), "Alarm set for " + c, Toast.LENGTH_SHORT).show();
-                    }
-                },Calendar.HOUR_OF_DAY,Calendar.MINUTE, false);
+                Calendar c = Calendar.getInstance();
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int min = c.get(Calendar.MINUTE);
+                int sec = 0;
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (TimePickerDialog.OnTimeSetListener) getContext(), hour, min, false);
                 timePickerDialog.show();
             }
         });

@@ -3,12 +3,20 @@ package com.myapp.clock;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TimePicker;
 
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,5 +44,16 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+    }
+    @Override
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReciever.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, i);
+        c.set(Calendar.MINUTE, i1);
+        c.set(Calendar.MILLISECOND, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
 }
