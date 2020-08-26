@@ -2,105 +2,95 @@ package com.myapp.clock;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.fragment.app.DialogFragment;
+/**
+ * Created by User on 12/10/2017.
+ */
 
-public class MyDialog extends DialogFragment implements TextView.OnEditorActionListener {
-    public int hours = 0;
-    public int mins = 0;
-    public int secs = 0;
-    public EditText hh;
-    public EditText mm;
-    public EditText ss;
-    public long time_timer;
+public class MyDialog extends DialogFragment {
 
-    public MyDialog()   {
+    private static final String TAG = "MyCustomDialog";
 
+    public interface OnInputSelected{
+        void sendInput(String input);
     }
+    public OnInputSelected mOnInputSelected;
 
-    public static MyDialog newInstance(String title)    {
-        MyDialog myDialog = new MyDialog();
-        Bundle args = new Bundle();
-        args.putString("title", title);
-        myDialog.setArguments(args);
-        return myDialog;
+    //widgets
+    private EditText hh, mm ,ss;
+    private TextView mActionOk, mActionCancel;
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        // Get the layout inflater
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.dialog_frag, null))
+                // Add action buttons
+                .setPositiveButton("OK",  (DialogInterface.OnClickListener)getContext())
+                .setNegativeButton("Cancel", (DialogInterface.OnClickListener)getContext());
+        return builder.create();
     }
 
     @Override
+    public View onCreateView(final LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.dialog_frag, container, false);
+        mActionOk = view.findViewById(R.id.action_ok);
+        mActionCancel = view.findViewById(R.id.action_cancel);
+        hh = view.findViewById(R.id.hours);
+        mm = view.findViewById(R.id.minutes);
+        ss = view.findViewById(R.id.seconds);
 
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.dialog_frag, container);
+        mActionCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: closing dialog");
+                getDialog().dismiss();
+            }
+        });
+
+        mActionOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: capturing input.");
+                long timer = Long.parseLong(hh.getText().toString()) * 60 * 60 * 1000;
+                timer += Long.parseLong(mm.getText().toString()) * 60 * 1000;
+                timer += Long.parseLong(ss.getText().toString()) * 1000;
+                String input = String.valueOf(timer);
+                if(!input.equals("")){
+
+//                    MainFragment fragment = (MainFragment) getActivity().getFragmentManager().findFragmentByTag("MainFragment");
+//                    fragment.mInputDisplay.setText(input);
+
+                    mOnInputSelected.sendInput(input);
+                }
+                getDialog().dismiss();
+            }
+        });
+
+        return view;
     }
 
     @Override
-
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        hh = (EditText) view.findViewById(R.id.hours);
-        mm = (EditText) view.findViewById(R.id.minutes);
-        ss = (EditText) view.findViewById(R.id.seconds);
-
-        // Fetch arguments from bundle and set title
-
-        assert getArguments() != null;
-        String title = getArguments().getString("title", "Enter Name");
-
-        getDialog().setTitle(title);
-
-        // Show soft keyboard automatically and request focus to field
-
-        hh.requestFocus();
-
-        getDialog().getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
-        // 2. Setup a callback when the "Done" button is pressed on keyboard
-        hh.setOnEditorActionListener((TextView.OnEditorActionListener)this);
-        mm.setOnEditorActionListener((TextView.OnEditorActionListener)this);
-        ss.setOnEditorActionListener((TextView.OnEditorActionListener)this);
-
-        hh.setOnEditorActionListener(this);
-    }
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-        if (EditorInfo.IME_ACTION_DONE == actionId) {
-            // Return input text back to activity through the implemented listener
-            MyDialogListener listener = (MyDialogListener) getActivity();
-
-            time_timer = Long.parseLong(hh.getText().toString()) * 60 * 60 * 1000;
-            time_timer += Long.parseLong(mm.getText().toString()) * 60 * 1000;
-            time_timer += Long.parseLong(ss.getText().toString()) * 1000;
-
-            listener.onFinishEditDialog(String.valueOf(time_timer));
-
-            // Close the dialog and return back to the parent activity
-            dismiss();
-            return true;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            mOnInputSelected = (OnInputSelected) getTargetFragment();
+        }catch (ClassCastException e){
+            Log.e(TAG, "onAttach: ClassCastException : " + e.getMessage() );
         }
-        return false;
     }
-
-    public interface MyDialogListener {
-        void onFinishEditDialog(String inputText);
-    }
-
 }
-

@@ -28,7 +28,7 @@
         android:text="Tap in the middle to set the timer"/>
 
     <Button
-        android:id="@+id/mButton"
+        android:id="@+id/mStart"
         android:layout_below="@id/progress_bar"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
     <Button
-        android:id="@+id/mButtonSet"
+        android:id="@+id/mSet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

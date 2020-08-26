@@ -1,89 +1,109 @@
 package com.myapp.clock;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
+import android.os.CountDownTimer;
 import android.provider.SyncStateContract;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-public class TimerFragment extends Fragment implements MyDialog.MyDialogListener {
+import com.google.android.material.snackbar.Snackbar;
 
-    public ProgressBar progressBar;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
-    public TimerFragment() {
-        //mText = getView().findViewById(R.id.timerProgress);
-        // Required empty public constructor
-    }
+public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSetListener{
 
     public TextView mText;
-    public Button buttonSelect;
-    public Button update;
+    public ProgressBar mProgress;
+    public Button mSet;
+    public Button mStart;
+    public long timeLeftInMillis;
+    public CountDownTimer countDownTimer;
+    public boolean timerRunning;
+    public int hrs, min, sec;
+    public boolean isItTimerPart = false;
 
-    MyDialog.MyDialogListener listener;
+    public TimerFragment()  {
 
+    }
 
-    @Override
+    public View view;
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View parentHolder = inflater.inflate(R.layout.fragment_timer, container, false);
-        // Inflate the layout for this fragment
-        getArguments().getString("title", "Lorem Ipsum");
-        progressBar = parentHolder.findViewById(R.id.progress_bar);
-        progressBar.setProgress(5);
-        mText = parentHolder.findViewById(R.id.timerProgress);
-        buttonSelect = parentHolder.findViewById(R.id.mButtonSet);
-        update = parentHolder.findViewById(R.id.mButton);
-        update.setOnClickListener(new View.OnClickListener() {
+
+        view = inflater.inflate(R.layout.fragment_timer, container, false);
+        mText = view.findViewById(R.id.mText);
+        mSet = view.findViewById(R.id.mSet);
+        mStart = view.findViewById(R.id.mStart);
+        mProgress = view.findViewById(R.id.progress_bar);
+
+        mStart.setVisibility(View.GONE);
+
+        mSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBar.incrementProgressBy(10);
+                MyDialog dialog = new MyDialog();
+                dialog.setTargetFragment(this, SyncStateContract.Constants.DIALOG_REQUEST_CODE);
+                dialog.show(getFragmentManager(), SyncStateContract.Constants.DIALOG);
+                isItTimerPart = true;
             }
         });
-        buttonSelect.setOnClickListener(new View.OnClickListener() {
+
+        mStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openDialog();
+                mStart.setVisibility(View.GONE);
+                startTimer();
             }
         });
 
-
-        return parentHolder;
+        return view;
     }
-
-    public void openDialog()   {
-        MyDialog myDialog = new MyDialog();
-        myDialog.show(getFragmentManager(), "TIME PICKER");
-    }
-
-    private void showEditDialog() {
-        FragmentManager fm = getFragmentManager();
-        MyDialog myDialog = MyDialog.newInstance("Select Time");
-        // SETS the target fragment for use later when sending results
-        myDialog.setTargetFragment(TimerFragment.this, 300);
-        myDialog.show(fm, "fragment_edit_name");
-
-    }
-
-
-
-    // This is called when the dialog is completed and the results have been passed
 
     @Override
-    public void onFinishEditDialog(String inputText) {
-        Toast.makeText(getContext(), "Hello there"+ inputText, Toast.LENGTH_SHORT).show();
+    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+        if(isItTimerPart) {
+            timeLeftInMillis = i * 24 * 60 * 1000;
+            timeLeftInMillis += i1 * 60 * 1000;
+            String s = i + ":" + i1 + ":00";
+            mText.setText(s);
+            mSet.setVisibility(View.GONE);
+            mStart.setVisibility(View.VISIBLE);
+            Snackbar.make(view, "Press start to continue timer", Snackbar.LENGTH_SHORT);
+        }
     }
 
+    public void startTimer()    {
+        countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeftInMillis = millisUntilFinished;
+                hrs = (int) (timeLeftInMillis / 1000) / 60 / 24;
+                min = (int) (timeLeftInMillis / 1000) / 60;
+                sec = (int) (timeLeftInMillis / 1000) % 60;
+
+                String fomattedText = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, min, sec);
+                mText.setText(fomattedText);
+            }
+
+            @Override
+            public void onFinish() {
+                Toast.makeText(getContext(), "Timer is done!", Toast.LENGTH_SHORT).show();
+                timerRunning = false;
+            }
+        }.start();
+        timerRunning = true;
+    }
 }

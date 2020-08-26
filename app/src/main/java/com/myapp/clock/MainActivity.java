@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.AlarmManager;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -26,6 +28,12 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         TabItem tabAlarm = findViewById(R.id.tabAlarm);
         TabItem tabStopwatch = findViewById(R.id.tabStopwatch);
         TabItem tabTimer = findViewById(R.id.tabTimer);
+
+        TimerFragment fragment = new TimerFragment();
+
+        /*FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment, "TimerFragment");
+        transaction.commit();*/
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());

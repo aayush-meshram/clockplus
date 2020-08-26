@@ -37,6 +37,7 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
         // Required empty public constructor
     }
 
+    public boolean isItTheAlarmPart = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +58,7 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
                 int sec = 0;
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (TimePickerDialog.OnTimeSetListener) getContext(), hour, min, false);
                 timePickerDialog.show();
+                isItTheAlarmPart = true;
             }
         });
         return parentHolder;
@@ -64,13 +66,15 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
 
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getActivity(), AlarmReciever.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 1, intent, 0);
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.HOUR_OF_DAY, i);
-        c.set(Calendar.MINUTE, i1);
-        c.set(Calendar.MILLISECOND, 0);
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        if (isItTheAlarmPart) {
+            AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(getActivity(), AlarmReciever.class);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 1, intent, 0);
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.HOUR_OF_DAY, i);
+            c.set(Calendar.MINUTE, i1);
+            c.set(Calendar.MILLISECOND, 0);
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
+        }
     }
 }
