@@ -22,7 +22,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new AlarmFragment();
             case 1:
-                return new TimerFragment();
+                return new timerfragment1();
             case 2:
                 return new StopwatchFragment();
             default:

@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.os.CountDownTimer;
 import android.provider.SyncStateContract;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSetListener{
+public class TimerFragment extends Fragment implements MyDialog.ISelectedData{
 
     public TextView mText;
     public ProgressBar mProgress;
@@ -43,6 +44,7 @@ public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSe
 
     private static final int DIALOG_REQUEST_CODE = 1;
     private static final String DIALOG = "TIME PICKER";
+    Fragment frag = this;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -60,8 +62,8 @@ public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSe
             @Override
             public void onClick(View view) {
                 MyDialog dialog = new MyDialog();
-                dialog.setTargetFragment(TimerFragment.this, DIALOG_REQUEST_CODE);
-                dialog.show(fm, DIALOG);
+                //dialog.setTargetFragment(TimerFragment.this, DIALOG_REQUEST_CODE);
+                //dialog.show(getFragmentManager(), DIALOG);
             }
         });
 
@@ -76,27 +78,15 @@ public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSe
         return view;
     }
 
-    @Override
-    public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        if(isItTimerPart) {
-            timeLeftInMillis = i * 24 * 60 * 1000;
-            timeLeftInMillis += i1 * 60 * 1000;
-            String s = i + ":" + i1 + ":00";
-            mText.setText(s);
-            mSet.setVisibility(View.GONE);
-            mStart.setVisibility(View.VISIBLE);
-            Snackbar.make(view, "Press start to continue timer", Snackbar.LENGTH_SHORT);
-        }
-    }
 
     public void startTimer()    {
         countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timeLeftInMillis = millisUntilFinished;
-                hrs = (int) (timeLeftInMillis / 1000) / 60 / 24;
-                min = (int) (timeLeftInMillis / 1000) / 60;
-                sec = (int) (timeLeftInMillis / 1000) % 60;
+                hrs = (int) (timeLeftInMillis * 1000) / 60 / 24;
+                min = (int) (timeLeftInMillis * 1000) / 60;
+                sec = (int) (timeLeftInMillis * 1000) % 60;
 
                 String fomattedText = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, min, sec);
                 mText.setText(fomattedText);
@@ -109,5 +99,19 @@ public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSe
             }
         }.start();
         timerRunning = true;
+    }
+
+    @Override
+    public void onSelectedData(String string) {
+        Toast.makeText(getContext(), string+ " Hello there", Toast.LENGTH_SHORT).show();
+        if(isItTimerPart) {
+            timeLeftInMillis = 1 * 24 * 60 * 1000;
+            timeLeftInMillis += 1 * 60 * 1000;
+            String s = 1 + ":" + 1 + ":00";
+            mText.setText(s);
+            mSet.setVisibility(View.GONE);
+            mStart.setVisibility(View.VISIBLE);
+            Snackbar.make(view, "Press start to continue timer", Snackbar.LENGTH_SHORT);
+        }
     }
 }

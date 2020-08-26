@@ -23,6 +23,7 @@ public class MyDialog extends DialogFragment {
 
     private static final String TAG = "MyCustomDialog";
     private static final String MY_VALUE = "SET TIME";
+    public static final int DIALOG_REQUEST_CODE = 1;
 
     public interface ISelectedData {
         void onSelectedData(String string);
@@ -78,7 +79,7 @@ public class MyDialog extends DialogFragment {
 //                    MainFragment fragment = (MainFragment) getActivity().getFragmentManager().findFragmentByTag("MainFragment");
 //                    fragment.mInputDisplay.setText(input);
 
-                    mOnInputSelected.sendInput(input);
+                    mOnInputSelected.onSelectedData(input);
                 }
                 getDialog().dismiss();
             }

@@ -64,10 +64,7 @@ public class StopwatchFragment extends Fragment {
         mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                if ((SystemClock.elapsedRealtime() - chronometer.getBase()) >= 10000) {
-                    chronometer.setBase(SystemClock.elapsedRealtime());
-                    Toast.makeText(getContext(), "Bing!", Toast.LENGTH_SHORT).show();
-                }
+
             }
         });
 
@@ -79,6 +76,7 @@ public class StopwatchFragment extends Fragment {
             mChronometer.setBase(SystemClock.elapsedRealtime() - pause);
             mChronometer.start();
             running = true;
+            mStart.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -87,12 +85,14 @@ public class StopwatchFragment extends Fragment {
             mChronometer.stop();
             pause = SystemClock.elapsedRealtime() - mChronometer.getBase();
             running = false;
+            mStart.setVisibility(View.VISIBLE);
         }
     }
 
     public void resetChronometer(View v)    {
         mChronometer.setBase(SystemClock.elapsedRealtime());
         pause = 0;
+        mStart.setVisibility(View.VISIBLE);
     }
 
 }
