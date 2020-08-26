@@ -1,10 +1,12 @@
 package com.myapp.clock;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,11 +22,12 @@ import android.widget.TextView;
 public class MyDialog extends DialogFragment {
 
     private static final String TAG = "MyCustomDialog";
+    private static final String MY_VALUE = "SET TIME";
 
-    public interface OnInputSelected{
-        void sendInput(String input);
+    public interface ISelectedData {
+        void onSelectedData(String string);
     }
-    public OnInputSelected mOnInputSelected;
+    public ISelectedData mOnInputSelected;
 
     //widgets
     private EditText hh, mm ,ss;
@@ -88,9 +91,28 @@ public class MyDialog extends DialogFragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         try{
-            mOnInputSelected = (OnInputSelected) getTargetFragment();
+            mOnInputSelected = (ISelectedData) getTargetFragment();
         }catch (ClassCastException e){
             Log.e(TAG, "onAttach: ClassCastException : " + e.getMessage() );
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == DIALOG_REQUEST_CODE) {
+
+            if (resultCode == Activity.RESULT_OK) {
+
+                if (data.getExtras().containsKey(MY_VALUE)) {
+
+                    String myValue = data.getExtras().getString(MY_VALUE);
+
+                    // Use the returned value
+                }
+            }
+        }
+    }
+
 }

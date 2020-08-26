@@ -4,6 +4,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.CountDownTimer;
 import android.provider.SyncStateContract;
@@ -40,6 +41,9 @@ public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSe
 
     public View view;
 
+    private static final int DIALOG_REQUEST_CODE = 1;
+    private static final String DIALOG = "TIME PICKER";
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -48,6 +52,7 @@ public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSe
         mSet = view.findViewById(R.id.mSet);
         mStart = view.findViewById(R.id.mStart);
         mProgress = view.findViewById(R.id.progress_bar);
+        FragmentManager fm = getFragmentManager();
 
         mStart.setVisibility(View.GONE);
 
@@ -55,9 +60,8 @@ public class TimerFragment extends Fragment implements TimePickerDialog.OnTimeSe
             @Override
             public void onClick(View view) {
                 MyDialog dialog = new MyDialog();
-                dialog.setTargetFragment(this, SyncStateContract.Constants.DIALOG_REQUEST_CODE);
-                dialog.show(getFragmentManager(), SyncStateContract.Constants.DIALOG);
-                isItTimerPart = true;
+                dialog.setTargetFragment(TimerFragment.this, DIALOG_REQUEST_CODE);
+                dialog.show(fm, DIALOG);
             }
         });
 
