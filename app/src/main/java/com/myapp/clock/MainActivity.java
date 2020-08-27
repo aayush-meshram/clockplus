@@ -29,7 +29,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         TabItem tabStopwatch = findViewById(R.id.tabStopwatch);
         TabItem tabTimer = findViewById(R.id.tabTimer);
 
-        TimerFragment fragment = new TimerFragment();
 
         /*FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.container, fragment, "TimerFragment");

@@ -6,9 +6,12 @@ import android.app.Service;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.DialogFragment;
@@ -20,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.textclassifier.TextClassificationManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -37,7 +41,10 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
         // Required empty public constructor
     }
 
-    public boolean isItTheAlarmPart = false;
+    public Button mStop;
+    public TextView mText;
+    public TextView mTime;
+    public Button mButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,9 +52,9 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
         // Inflate the layout for this fragment
         View parentHolder = inflater.inflate(R.layout.fragment_alarm, container, false);
 
-        final TextView mText = parentHolder.findViewById(R.id.mText);
-        final TextView mTime = parentHolder.findViewById(R.id.mTime);
-        Button mButton = parentHolder.findViewById(R.id.mButton);
+        mText = parentHolder.findViewById(R.id.mText);
+        mTime = parentHolder.findViewById(R.id.mTime);
+        mButton = parentHolder.findViewById(R.id.mButton);
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,23 +65,23 @@ public class AlarmFragment extends Fragment implements TimePickerDialog.OnTimeSe
                 int sec = 0;
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (TimePickerDialog.OnTimeSetListener) getContext(), hour, min, false);
                 timePickerDialog.show();
-                isItTheAlarmPart = true;
             }
         });
+
         return parentHolder;
     }
 
     @Override
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
-        if (isItTheAlarmPart) {
-            AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(getActivity(), AlarmReciever.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 1, intent, 0);
-            Calendar c = Calendar.getInstance();
-            c.set(Calendar.HOUR_OF_DAY, i);
-            c.set(Calendar.MINUTE, i1);
-            c.set(Calendar.MILLISECOND, 0);
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
-        }
+        mText.setText("Alarm Set!");
+        mButton.setVisibility(View.INVISIBLE);
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getActivity(), AlarmReciever.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getContext(), 1, intent, 0);
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.HOUR_OF_DAY, i);
+        c.set(Calendar.MINUTE, i1);
+        c.set(Calendar.MILLISECOND, 0);
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
     }
 }
